@@ -1,0 +1,209 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Apr 16 13:15:18 2015
+
+@author: Lucas
+"""
+import matplotlib.pyplot as plt
+
+
+usuario = open("usuario.csv", "r+").readlines()
+
+alimentos = open("alimentos.csv", "r+").readlines()
+
+calorias06 = []
+calorias07 = []
+proteinas06 = []
+proteinas07 = []
+carboidratos06 = []
+carboidratos07 = []
+gorduras06 = []
+gorduras07 = []
+
+TMB_dados = []
+
+grafico_calorias = []
+grafico_proteinas = []
+grafico_carboidratos = []
+grafico_gorduras = []
+alimentoslista = {}
+
+usuariogramas = {}
+usuario_dias = {}
+alimentos_calorias = {}
+alimentos_proteinas = {}
+alimentos_carboidratos = {}
+alimentos_gorduras = {}
+
+
+
+for i in alimentos:
+    a = i.strip().split(",")
+    alimentos_calorias[a[0]] = a[2]
+    alimentos_proteinas[a[0]] = a[3]
+    alimentos_carboidratos[a[0]] = a[4]
+    alimentos_gorduras[a[0]] = a[5]
+
+del alimentos_calorias["Alimento"]
+
+for i in usuario:
+    u = i.strip().split(",")
+    usuariogramas[u[1]] = u[2]
+    if u == ['Fulano da Silva', '30', '70', 'M', '1.64', 'alto']:
+        TMB_dados = u
+        
+    if u[0] in usuario_dias:
+        usuario_dias[u[0]].append(u[1])
+    else:
+         usuario_dias[u[0]] = [u[1]]
+
+del usuario_dias["Nome"]
+del usuario_dias["Data"]
+del usuario_dias["Fulano da Silva"]
+
+del usuariogramas["Idade (anos)"]
+del usuariogramas["Alimento"]
+del usuariogramas["30"]
+
+
+
+for i in usuario_dias["06/04/15"]: #i será o nome dos alimentos comidos em 06/04   
+    q = float(alimentos_calorias[i]) #calorias dos alimentos em 06/04
+    w = float(usuariogramas[i]) #gramas que o usuario comeu dessas comidas em 06/04
+    x = (q*w)/100 #as regras de 3!
+    calorias06.append(x) #adicionando os resultados dessas regras de 3 à uma lista
+        
+
+for i in usuario_dias["07/04/15"]: #calcula calorias para dia 07/04/15:
+    q = float(alimentos_calorias[i])
+    w = float(usuariogramas[i])
+    x = (q*w)/100
+    #print(x)
+    calorias07.append(x)
+        
+grafico_calorias.append(sum(calorias06)) #sum = soma dos elementos da lista para dar o total de calorias no dia
+grafico_calorias.append(sum(calorias07))
+
+for i in usuario_dias["06/04/15"]: #calcula proteinas para dia 06/04/15:
+    q = float(alimentos_proteinas[i])
+    w = float(usuariogramas[i])
+    x = (q*w)/100
+    proteinas06.append(x)
+        
+
+for i in usuario_dias["07/04/15"]: #calcula proteinas para dia 07/04/15:
+    q = float(alimentos_proteinas[i])
+    w = float(usuariogramas[i])
+    x = (q*w)/100
+    proteinas07.append(x)
+        
+grafico_proteinas.append(sum(proteinas06))
+grafico_proteinas.append(sum(proteinas07))
+
+for i in usuario_dias["06/04/15"]: #calcula carboidratos para dia 06/04/15:
+    q = float(alimentos_carboidratos[i])
+    w = float(usuariogramas[i])
+    x = (q*w)/100
+    carboidratos06.append(x)
+        
+
+for i in usuario_dias["07/04/15"]: #calcula carboidratos para dia 07/04/15:
+    q = float(alimentos_carboidratos[i])
+    w = float(usuariogramas[i])
+    x = (q*w)/100
+    carboidratos07.append(x)
+
+grafico_carboidratos.append(sum(carboidratos06))
+grafico_carboidratos.append(sum(carboidratos07))
+
+for i in usuario_dias["06/04/15"]: #calcula gorduras para dia 06/04/15:
+    q = float(alimentos_gorduras[i])
+    w = float(usuariogramas[i])
+    x = (q*w)/100
+    gorduras06.append(x)
+        
+
+for i in usuario_dias["07/04/15"]: #calcula gorduras para dia 07/04/15:
+    q = float(alimentos_gorduras[i])
+    w = float(usuariogramas[i])
+    x = (q*w)/100
+    gorduras07.append(x)
+
+grafico_gorduras.append(sum(gorduras06))
+grafico_gorduras.append(sum(gorduras07))
+
+#Cálculos de calorias reomendadas:
+peso = float(TMB_dados[2])
+altura = float(TMB_dados[4])
+idade = float(TMB_dados[1])
+genero = TMB_dados[3].lower()
+atividade = TMB_dados[5]
+
+rec_calorias = 0
+
+if genero == "m":
+    TMB = 88.36 + (13.4*peso) + (4.8*altura) - (5.7*idade)
+if genero == "f":
+    TMB = 447,6 + (9.2*peso) + (3.1*altura) - (4.3*idade)
+    
+
+if atividade == "minimo":
+    rec_calorias = [TMB*1.2]*2
+if atividade == "baixo":
+    rec_calorias = [TMB*1.375]*2
+if atividade == "medio":
+    rec_calorias = [TMB*1.55]*2    
+if atividade == "alto":
+    rec_calorias = [TMB*1.725]*2   
+if atividade == "muito alto":
+    rec_calorias = [TMB*1.9]*2
+
+print(" calorias diárias recomendadas: ", rec_calorias[0])
+
+
+#Cálculos do IMC
+Escala = 0
+Recom = 0
+maismenos1 = 0
+maismenos2 = 0
+IMC = (1.3*peso)/(altura**2.5)
+if IMC <18.5:
+    Escala = "Você está abaixo do peso ideal. Coma mais, coma melhor!"
+elif IMC >18.5 and IMC<24.9:
+    Escala = "Você está BEM!"
+elif IMC >24.9 and IMC<29.9:
+    Escala = "Você está com sobrepeso "
+elif IMC> 29.9:
+    Escala = "Você está obeso! Larga o cheeseburguer rapaz!"
+
+a = rec_calorias[0] - grafico_calorias[0]
+b = rec_calorias[1] - grafico_calorias[1]
+
+
+if a>0 and b>0:
+    Recom = "mas comeu menos nos últimos 2 dias, parabéns! Você comeu "
+    maismenos1 = " calorias a menos no primeiro dia e "
+    maismenos2 = " calorias a menos no segundo dia!"
+    
+#poderia ter feito o if acima pras mais variadas situações, mas isso seria desperdício uma vez que a taxa de consumo dos dias em usuario.csv prmanece fixo.
+
+
+saida = open("saida.txt", "w")
+saida.writelines("Seu IMC é:"+ " " + str(IMC) + ".  "+ Escala + Recom + str(a) + maismenos1 + str(b) + maismenos2)
+saida.close()
+
+
+Tempo = [1,2]
+p1 = plt.plot(Tempo,grafico_calorias)
+p2 = plt.plot(Tempo,grafico_proteinas)
+p3 = plt.plot(Tempo,grafico_carboidratos)
+p4 = plt.plot(Tempo,grafico_gorduras)
+p5 = plt.plot(Tempo, rec_calorias)
+plt.ylabel('Total de calorias, proteinas, carboidratos e goruras p/ cada dia')
+plt.xlabel('Dias da semana(1.0 = 06/04 e 2.0 = 07/04')
+plt.title(r'Ingestão de alimentos dia 06 e 07')
+plt.legend( (p1[0], p2[0], p3[0], p4[0], p5[0]), ('Calorias consum.', 'proteinas', 'carboidratos', 'gorduras', 'calorias recomend.') )
+
+plt.show()
+
+print("Verificar arquivo saída.txt pra ver seu IMC!")
